@@ -1,7 +1,10 @@
 import psycopg
+import pandas as pd
 
 
 class Database:
+
+    """ Database initiates a connexion to TimeScaleDB """
     
     def __init__(self, host: str, port: int, database_name: str, user: str, password: str) -> None:
         self.host = str(host)
@@ -11,10 +14,23 @@ class Database:
         self.password = str(password)
 
     def connect(self) -> psycopg.Connection:
-        pass
+        return psycopg.connect(host = self.host, 
+                               port = self.port, 
+                               dbname = self.database_name, 
+                               user = self.user, 
+                               password = self.password)
+    
 
-    def test(self) -> None:
+class PriceRepository:
+
+    """ Save, Load, Update and Delete prices from the database"""
+
+    def __init__(self, database: Database) -> None:
+        self.database = database
+
+    def save(self, price: pd.DataFrame) -> None:
         pass
+    
 
 
 
