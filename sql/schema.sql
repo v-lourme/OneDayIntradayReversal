@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS prices (
+    date DATE NOT NULL,
+    ticker TEXT NOT NULL, 
+    close DOUBLE PRECISION NOT NULL, 
+    high DOUBLE PRECISION NOT NULL, 
+    low DOUBLE PRECISION NOT NULL, 
+    open DOUBLE PRECISION NOT NULL, 
+    volume BIGINT NOT NULL,
+
+    PRIMARY KEY (date, ticker)
+);

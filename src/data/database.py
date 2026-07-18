@@ -28,8 +28,42 @@ class PriceRepository:
     def __init__(self, database: Database) -> None:
         self.database = database
 
-    def save(self, price: pd.DataFrame) -> None:
-        pass
+    def save(self, price: pd.DataFrame, connexion: psycopg.Connection | None = None) -> None:
+        
+        upsert_query = """
+                INSERT INTO prices (
+                    date, 
+                    ticker, 
+                    close, 
+                    high, 
+                    low, 
+                    open, 
+                    volume
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (date, ticker)
+                DO UPDATE SET
+                    close = EXCLUDED.close, 
+                    high = EXCLUDED.high, 
+                    low = EXCLUDED.low, 
+                    open = EXCLUDED.open, 
+                    volume = EXCLUDED.volume
+        """
+
+        rows = list(
+            price[
+                ["Date", "Ticker", "Close", "High", "Low", "Open", "Volume"]
+            ].itertuples(index=False, name=None)
+        )
+
+        if connexion is None:
+            with self.database.connect() as connexion:
+                with connexion.cursor() as cursor:
+                    cursor.executemany(upsert_query, rows)
+
+        else:
+            with connexion.cursor() as cursor:
+                cursor.executemany(upsert_query, rows)
     
 
 
